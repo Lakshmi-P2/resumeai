@@ -1,0 +1,13 @@
+Delete Message
+We use a Delete Message to delete an object. When an object is deallocated memory or is destroyed within the system we use the Delete Message symbol. It destroys the occurrence of the object in the system. It is represented by an arrow terminating with a x.
+Delete Message
+We use a Delete Message to delete an object. When an object is deallocated memory or is destroyed within the system we use the Delete Message symbol. It destroys the occurrence of the object in the system. It is represented by an arrow terminating with a x.
+If you want, I can also explain Activation Bar and Types of Messages (Synchronous, Asynchronous, If you want, I can also explain Activation Bar and Types of Messages (Synchronous, Asynchronous, Return) in simple language 😊If you want, I can also explain Activation Bar and Types of Messages (Synchronous, Asynchronous, Return) in simple language 😊If you want, I can also explain Activation Bar and Types of Messages (Synchronous, Asynchronous, Return) in simple language 😊v) in simple language 😊A Delete Message is used to destroy or remove an object.
+
+It shows memory deallocation.
+
+Represented by an arrow ending with an X.
+
+The object’s lifeline ends at that point.
+
+If you want, I can also explain Activation Bar and Types of Messages (Synchronous, Asynchronous, Return) in simple language 😊
