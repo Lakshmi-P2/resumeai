@@ -1,5 +1,5 @@
 ﻿[build]
-buildCommand = "npm install && npx vite build"
+buildCommand = "npm install --include=dev && npx --yes vite build"
 
 [deploy]
 startCommand = "npm run start"
