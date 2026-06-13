@@ -45,14 +45,17 @@ export default function Landing() {
             Upload your resume and get an instant AI score, weakness analysis, ATS check,
             and rewrite suggestions in under 20 seconds.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register" className="gradient-btn text-white px-8 py-4 rounded-xl font-semibold text-lg">
-              Analyze my resume free →
-            </Link>
-            <Link to="/jobs" className="glass text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/5 transition-colors">
-              Browse jobs
-            </Link>
-          </div>
+         <div className="flex flex-col sm:flex-row gap-4 justify-center">
+  <Link to="/register" className="gradient-btn text-white px-8 py-4 rounded-xl font-semibold text-lg">
+    Analyze my resume FREE →
+  </Link>
+  <Link to="/jobs" className="glass text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/5 transition-colors">
+    Browse jobs
+  </Link>
+  <Link to="/register-company" className="glass text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/5 transition-colors border border-primary/30">
+    🏢 Register Organization
+  </Link>
+</div>
         </div>
       </section>
 

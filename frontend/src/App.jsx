@@ -15,6 +15,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import SuperAdmin from './pages/superadmin/SuperAdmin'
 import Notifications from './pages/Notifications'
 import ForgotPassword from './pages/ForgotPassword'
+import RegisterCompany from './pages/RegisterCompany'
 
 function PrivateRoute({ children, role }) {
   const { user } = useAuth()
@@ -34,6 +35,7 @@ function App() {
       <Route path="/jobs" element={<JobBoard />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+      <Route path="/register-company" element={<RegisterCompany />} />
       <Route path="/dashboard" element={
         <PrivateRoute>
           <Dashboard />

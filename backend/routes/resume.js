@@ -174,5 +174,61 @@ router.get('/analysis/:id', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' })
   }
 })
+// GET AI JOB SUGGESTIONS
+router.get('/job-suggestions/:resumeId', auth, async (req, res) => {
+  try {
+    // Get resume
+    const resumeResult = await pool.query(
+      'SELECT * FROM resumes WHERE id = $1 AND user_id = $2',
+      [req.params.resumeId, req.user.id]
+    )
+    if (resumeResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Resume not found' })
+    }
+
+    // Get analysis
+    const analysisResult = await pool.query(
+      'SELECT * FROM analyses WHERE resume_id = $1',
+      [req.params.resumeId]
+    )
+
+    // Get all jobs
+    const jobsResult = await pool.query(
+      `SELECT j.*, c.name as company_name 
+       FROM jobs j 
+       JOIN companies c ON j.company_id = c.id 
+       WHERE j.status = 'active'`
+    )
+
+    if (analysisResult.rows.length === 0) {
+      return res.json({ suggestions: jobsResult.rows.slice(0, 5) })
+    }
+
+    const analysis = analysisResult.rows[0]
+    const existingKeywords = JSON.parse(analysis.keyword_gaps || '[]')
+    const skills = JSON.parse(analysis.existing_keywords || '[]')
+
+    // Score each job based on skill match
+    const scoredJobs = jobsResult.rows.map(job => {
+      const jobSkills = JSON.parse(job.skills_required || '[]')
+      const matchCount = jobSkills.filter(s =>
+        skills.some(skill => skill.toLowerCase().includes(s.toLowerCase()) ||
+          s.toLowerCase().includes(skill.toLowerCase()))
+      ).length
+      const matchPercent = jobSkills.length > 0
+        ? Math.round((matchCount / jobSkills.length) * 100)
+        : 50
+      return { ...job, match_percent: matchPercent }
+    })
+
+    // Sort by match percent
+    scoredJobs.sort((a, b) => b.match_percent - a.match_percent)
+
+    res.json({ suggestions: scoredJobs.slice(0, 6) })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Server error' })
+  }
+})
 
 module.exports = router

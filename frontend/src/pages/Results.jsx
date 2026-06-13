@@ -2,9 +2,14 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
 import { getAnalysis } from '../api'
+import { useState, useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import Navbar from '../components/layout/Navbar'
+import { getAnalysis, getJobSuggestions } from '../api'
 
 export default function Results() {
   const { id } = useParams()
+  const [suggestions, setSuggestions] = useState([])
   const [analysis, setAnalysis] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -14,15 +19,22 @@ export default function Results() {
   }, [id])
 
   const loadAnalysis = async () => {
+  try {
+    const res = await getAnalysis(id)
+    setAnalysis(res.data)
+    // Get job suggestions based on resume
     try {
-      const res = await getAnalysis(id)
-      setAnalysis(res.data)
+      const suggestRes = await getJobSuggestions(res.data.resume_id)
+      setSuggestions(suggestRes.data.suggestions || [])
     } catch (err) {
-      setError('Could not load analysis!')
-    } finally {
-      setLoading(false)
+      console.error('Could not load suggestions')
     }
+  } catch (err) {
+    setError('Could not load analysis!')
+  } finally {
+    setLoading(false)
   }
+}
 
   if (loading) {
     return (
@@ -235,6 +247,48 @@ export default function Results() {
             </p>
           </div>
         )}
+
+        {/* AI Job Suggestions */}
+{suggestions.length > 0 && (
+  <div className="glass rounded-2xl p-6 mb-6">
+    <h2 className="text-white font-semibold text-lg mb-2">
+      🎯 AI Recommended Jobs for You
+    </h2>
+    <p className="text-dark-text text-sm mb-4">
+      Based on your resume skills — best matches first!
+    </p>
+    <div className="grid md:grid-cols-2 gap-4">
+      {suggestions.map((job, i) => (
+        <div key={i} className="glass rounded-xl p-4">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <h3 className="text-white font-medium">{job.title}</h3>
+              <p className="text-dark-text text-sm">{job.company_name} · {job.location}</p>
+            </div>
+            <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+              job.match_percent >= 70
+                ? 'bg-green-500/10 text-green-400'
+                : 'bg-yellow-500/10 text-yellow-400'
+            }`}>
+              {job.match_percent}% match
+            </span>
+          </div>
+          {job.salary_min && (
+            <p className="text-primary text-xs mb-2">
+              ₹{job.salary_min}-{job.salary_max} LPA
+            </p>
+          )}
+          <Link
+            to={`/jobs`}
+            className="gradient-btn text-white text-xs px-3 py-1.5 rounded-lg inline-block"
+          >
+            Apply now →
+          </Link>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         {/* Action Buttons */}
         <div className="grid md:grid-cols-3 gap-4">

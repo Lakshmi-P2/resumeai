@@ -49,3 +49,4 @@ export const postJob = (data) => API.post('/admin/jobs', data)
 
 // ─── AI DIRECT ───
 export const analyzeResume = (data) => AI.post('/analyze', data)
+export const getJobSuggestions = (resumeId) => API.get(`/resume/job-suggestions/${resumeId}`)
