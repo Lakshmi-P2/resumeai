@@ -83,17 +83,9 @@ export default function Dashboard() {
             </h1>
             <p className="text-dark-text mt-1">Here's your career progress</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/upload" className="gradient-btn text-white px-6 py-3 rounded-xl font-medium">
-              + Analyze Resume
-            </Link>
-            <button
-              onClick={logoutUser}
-              className="glass text-dark-text px-4 py-3 rounded-xl text-sm hover:text-white transition-colors"
-            >
-              Logout
-            </button>
-          </div>
+          <Link to="/upload" className="gradient-btn text-white px-6 py-3 rounded-xl font-medium">
+            + Analyze Resume
+          </Link>
         </div>
 
         {/* Stats */}
@@ -130,7 +122,10 @@ export default function Dashboard() {
                         {new Date(r.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <span className={`text-sm font-bold ${r.overall_score >= 70 ? 'text-green-400' : r.overall_score >= 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    <span className={`text-sm font-bold ${
+                      r.overall_score >= 70 ? 'text-green-400' :
+                      r.overall_score >= 50 ? 'text-yellow-400' : 'text-red-400'
+                    }`}>
                       {r.overall_score ? `${r.overall_score}%` : 'N/A'}
                     </span>
                   </div>
@@ -159,10 +154,11 @@ export default function Dashboard() {
                   <div key={i} className="glass rounded-xl p-3">
                     <p className="text-white text-sm font-medium">{app.job_title}</p>
                     <p className="text-dark-text text-xs">{app.company_name}</p>
-                    <span className={`text-xs mt-1 inline-block px-2 py-0.5 rounded-full capitalize
-                      ${app.status === 'interview' ? 'bg-green-500/10 text-green-400' :
-                        app.status === 'rejected' ? 'bg-red-500/10 text-red-400' :
-                        'bg-blue-500/10 text-blue-400'}`}>
+                    <span className={`text-xs mt-1 inline-block px-2 py-0.5 rounded-full capitalize ${
+                      app.status === 'interview' ? 'bg-green-500/10 text-green-400' :
+                      app.status === 'rejected' ? 'bg-red-500/10 text-red-400' :
+                      'bg-blue-500/10 text-blue-400'
+                    }`}>
                       {app.status}
                     </span>
                   </div>
@@ -174,7 +170,7 @@ export default function Dashboard() {
             </Link>
           </div>
 
-          {/* Recommended Jobs */}
+          {/* Latest Jobs */}
           <div className="glass rounded-2xl p-6">
             <h2 className="text-white font-semibold text-lg mb-4">Latest Jobs</h2>
             {jobs.length === 0 ? (
@@ -186,12 +182,12 @@ export default function Dashboard() {
               <div className="space-y-3">
                 {jobs.map((job, i) => (
                   <div key={i} className="glass rounded-xl p-4">
-                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-white text-sm font-medium">{job.title}</h3>
-                    </div>
+                    <h3 className="text-white text-sm font-medium">{job.title}</h3>
                     <p className="text-dark-text text-xs">{job.company_name} · {job.location}</p>
                     {job.salary_min && (
-                      <p className="text-primary text-xs mt-1">{job.salary_min}-{job.salary_max} LPA</p>
+                      <p className="text-primary text-xs mt-1">
+                        ₹{job.salary_min}-{job.salary_max} LPA
+                      </p>
                     )}
                   </div>
                 ))}
@@ -204,12 +200,13 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
           {[
             { label: '📄 Upload Resume', href: '/upload' },
             { label: '💼 Browse Jobs', href: '/jobs' },
             { label: '📝 My Applications', href: '/applications' },
             { label: '🤖 AI Tools', href: '/ai-tools' },
+            { label: '🎤 Interview Prep', href: '/interview-prep' },
           ].map(link => (
             <Link
               key={link.label}
@@ -220,6 +217,7 @@ export default function Dashboard() {
             </Link>
           ))}
         </div>
+
       </div>
     </div>
   )
