@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/layout/Navbar'
 import { getMyApplications } from '../api'
+import { Link } from 'react-router-dom'
 
 const stages = ['applied', 'viewed', 'shortlisted', 'interview', 'offer', 'rejected']
 
-const statusColor = {
-  applied: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
-  viewed: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
-  shortlisted: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400',
-  interview: 'bg-green-500/10 border-green-500/20 text-green-400',
-  offer: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-  rejected: 'bg-red-500/10 border-red-500/20 text-red-400',
+const statusConfig = {
+  applied: { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20', label: 'Applied', icon: '📤' },
+  viewed: { color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20', label: 'Viewed by Company', icon: '👀' },
+  shortlisted: { color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20', label: 'Shortlisted!', icon: '⭐' },
+  interview: { color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20', label: 'Interview Scheduled!', icon: '🎤' },
+  offer: { color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', label: 'Offer Received!', icon: '🎉' },
+  rejected: { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20', label: 'Not Selected', icon: '❌' },
 }
 
 export default function MyApplications() {
@@ -33,10 +34,11 @@ export default function MyApplications() {
   }
 
   const stats = [
-    { label: 'Total Applied', value: applications.length, color: 'text-white' },
-    { label: 'In Progress', value: applications.filter(a => !['rejected', 'offer'].includes(a.status)).length, color: 'text-blue-400' },
-    { label: 'Interviews', value: applications.filter(a => a.status === 'interview').length, color: 'text-green-400' },
-    { label: 'Offers', value: applications.filter(a => a.status === 'offer').length, color: 'text-yellow-400' },
+    { label: 'Total Applied', value: applications.length, color: 'text-white', icon: '📝' },
+    { label: 'Under Review', value: applications.filter(a => ['applied', 'viewed'].includes(a.status)).length, color: 'text-blue-400', icon: '🔍' },
+    { label: 'Shortlisted', value: applications.filter(a => a.status === 'shortlisted').length, color: 'text-yellow-400', icon: '⭐' },
+    { label: 'Interviews', value: applications.filter(a => a.status === 'interview').length, color: 'text-green-400', icon: '🎤' },
+    { label: 'Offers', value: applications.filter(a => a.status === 'offer').length, color: 'text-emerald-400', icon: '🎉' },
   ]
 
   if (loading) {
@@ -54,13 +56,14 @@ export default function MyApplications() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white">My Applications</h1>
-          <p className="text-dark-text mt-1">Track all your job applications</p>
+          <p className="text-dark-text mt-1">Track all your job applications in real time</p>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           {stats.map(s => (
             <div key={s.label} className="glass rounded-2xl p-4 text-center">
+              <div className="text-2xl mb-1">{s.icon}</div>
               <div className={`text-2xl font-bold ${s.color} mb-1`}>{s.value}</div>
               <div className="text-dark-text text-xs">{s.label}</div>
             </div>
@@ -73,14 +76,15 @@ export default function MyApplications() {
           <div className="flex gap-4 min-w-max">
             {stages.map(stage => {
               const stageApps = applications.filter(a => a.status === stage)
+              const config = statusConfig[stage]
               return (
-                <div key={stage} className="w-44">
-                  <div className="text-dark-text text-xs font-medium mb-3 uppercase tracking-wide">
-                    {stage} ({stageApps.length})
+                <div key={stage} className="w-48">
+                  <div className={`text-xs font-medium mb-3 uppercase tracking-wide ${config?.color || 'text-dark-text'}`}>
+                    {config?.label || stage} ({stageApps.length})
                   </div>
                   <div className="space-y-2">
                     {stageApps.map((app, i) => (
-                      <div key={i} className="glass rounded-xl p-3">
+                      <div key={i} className={`glass rounded-xl p-3 border ${config?.bg || ''}`}>
                         <p className="text-white text-sm font-medium">{app.company_name}</p>
                         <p className="text-dark-text text-xs">{app.job_title}</p>
                       </div>
@@ -104,26 +108,45 @@ export default function MyApplications() {
             <div className="text-center py-12">
               <p className="text-5xl mb-4">📝</p>
               <p className="text-white text-xl mb-2">No applications yet!</p>
-              <p className="text-dark-text">Browse jobs and start applying</p>
+              <p className="text-dark-text mb-6">Browse jobs and start applying</p>
+              <Link to="/jobs" className="gradient-btn text-white px-8 py-3 rounded-xl font-medium inline-block">
+                Browse Jobs
+              </Link>
             </div>
           ) : (
             <div className="space-y-3">
-              {applications.map((app, i) => (
-                <div key={i} className="flex items-center justify-between glass rounded-xl p-4">
-                  <div>
-                    <p className="text-white font-medium">{app.job_title}</p>
-                    <p className="text-dark-text text-sm">
-                      {app.company_name} · Applied {new Date(app.created_at).toLocaleDateString()}
-                    </p>
+              {applications.map((app, i) => {
+                const config = statusConfig[app.status]
+                return (
+                  <div key={i} className={`flex items-center justify-between glass rounded-xl p-4 border ${config?.bg || ''}`}>
+                    <div>
+                      <p className="text-white font-medium">{app.job_title}</p>
+                      <p className="text-dark-text text-sm">
+                        {app.company_name} · {app.location}
+                      </p>
+                      <p className="text-dark-text text-xs mt-1">
+                        Applied: {new Date(app.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className={`flex items-center gap-2 ${config?.color}`}>
+                        <span>{config?.icon}</span>
+                        <span className="text-sm font-medium">{config?.label || app.status}</span>
+                      </div>
+                      {app.status === 'offer' && (
+                        <p className="text-emerald-400 text-xs mt-1">Congratulations!</p>
+                      )}
+                      {app.status === 'interview' && (
+                        <p className="text-green-400 text-xs mt-1">Check your email!</p>
+                      )}
+                    </div>
                   </div>
-                  <span className={`border px-3 py-1 rounded-full text-sm font-medium capitalize ${statusColor[app.status] || 'bg-gray-500/10 border-gray-500/20 text-gray-400'}`}>
-                    {app.status}
-                  </span>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
+
       </div>
     </div>
   )

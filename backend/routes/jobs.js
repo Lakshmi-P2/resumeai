@@ -63,6 +63,12 @@ router.post('/:id/apply', auth, async (req, res) => {
       [result.rows[0].id, null, 'applied', req.user.id]
     )
 
+
+    // After successful application insert:
+await pool.query(
+  'INSERT INTO notifications (user_id, type, message) VALUES ($1, $2, $3)',
+  [req.user.id, 'application', `Your application for ${req.params.id} has been submitted successfully! The company will review it soon.`]
+)
     // Create notification
     await pool.query(
       'INSERT INTO notifications (user_id, type, message) VALUES ($1, $2, $3)',
